@@ -1,0 +1,20 @@
+{% extends 'user_authentication/base.html' %}
+
+{% block content %}
+
+    <div class="flex containter max-w-full justify-center" style="margin-top: 6rem;">
+        <form method="POST" class="text-lg flex-1 text-center">
+           
+            <h1 class="text-2xl font-bold" style=" margin-bottom: 0.5rem;">Sign In</h1>
+            <p style="color: rgb(245, 43, 43); margin-bottom: 1.4rem;">{{notif}}</p>
+            {% csrf_token %}
+            <div class="flex flex-col">
+                {{signIn_form.as_p}}
+            </div>
+
+            <p class="mt-5" class="text-end">If you don't have an account, please: <a class="font-bold ml-1" href="{% url 'sign_up' %}" style="color: rgb(248, 72, 190);">Sign Up</a></p>
+            <button class="text-center mt-5 rounded-full font-bold bg-slate-950 text-white w-40" style="height: 3rem;">Sign In</button>
+        </form>
+    </div>
+
+{% endblock %}

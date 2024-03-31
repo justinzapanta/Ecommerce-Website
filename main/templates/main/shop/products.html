@@ -1,0 +1,216 @@
+{% extends 'main/base.html '%}
+{% load static %}
+
+
+{% block add-style-link %}
+    <link rel="stylesheet" href="{% static 'css/shop.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+{% endblock %}
+
+
+{% block header %}
+    <!--HEADER FOR DeskTop View-->
+    <header class="container sticky top-0 max-w-full md:block hidden z-50 text-white bg-slate-950 py-2">
+        <div class="flex flex-col md:flex-row">
+            <h1 class="flex-1 text-3xl text-center md:text-left md:ml-5 ">Ecommerce Website</h1>
+            <nav class="md:mr-10">
+                {% block nav-link %}
+                    <ul class="flex justify-center md:justify-normal mt-2 font-bold text-lg">
+                    {% if login %}
+                        <li><a href="#">Profile</a></li>
+                        <li class="ml-8"><a href="{% url 'sign_out' %}">Sign Out</a></li>
+                    {% else %}
+                        <li><a href="{% url 'sign_in' %}">Sign In</a></li>
+                    {% endif %}
+                        <li class="ml-8"><a class="hover:cursor-pointer" onclick="showCart()"> <i class="fas fa-shopping-cart fa-2x"></i> </a></li>
+                    </ul>
+                {% endblock %}
+            </nav>
+        </div>
+    </header>
+
+
+
+
+    <!--HEADER FOR MOBILE VIEW-->
+    <header class="container border-b-2 rounded-b-md pb-1 shadow-sm sticky top-0 max-w-full md:justify-between bg-gray-50 text-black mt-2 md:hidden">
+        <ul class="flex mx-2 justify-between">
+            <li class="mr-1 mt-1"><a id="menu" class="hover:cursor-pointer"><i class="fas fa-regular fa-bars fa-2x"></i></a></li>
+            <input placeholder="Search" class="border-solid border-2 w-9/12 pl-1 h-10 rounded-md" type="text">
+            <li class="ml-1"></li><a id="cart" class="hover:cursor-pointer mt-1"><i class="fas fa-shopping-cart fa-2x"></i></a></li>
+        </ul>
+    </header>
+{% endblock %}
+
+
+
+
+{% block content %}
+
+    <div class="container max-w-full h-96 hidden z-0 md:block bg-model-background-gray">
+        <div class="w-80 h-80 rounded-full absolute bg-white top-34 right-20"></div>
+        <h3 class="text-8xl absolute font-bold font-serif top-52 left-24 text-white">SHOP NOW!</h3>
+        <div class="flex">
+            <img class="text-right absolute top-13 right-60 w-64" src="{% static 'img/model3.png' %}" alt="">
+        </div>
+    </div>
+
+
+
+
+
+
+
+    <!--Content Container-->
+    <div class=" mt-2 md:flex flex-col">
+        <!--SEARCH -->
+        <div class="container max-w-full hidden md:block mt-3">
+            <form class="flex justify-center">
+                <input placeholder="Search" type="text" class="border-2 border-slate-500 pl-2 rounded-sm w-8/12 h-11 mr-5" >
+                <button class="w-36 h-11 font-bold bg-slate-950 rounded-lg text-white">Search</button>
+            </form>
+        </div>
+
+
+        <!--Cart Container-->
+        <div id="product-container" class="container max-w-full  mt-2 md:flex">
+
+            <div id="card" class="container max-w-full mt-5">
+                <!---->
+                <div id="image" class="flex flex-col items-center rounded-t-2xl border-2 mx-7 bg-white shadow-sm">
+                    <div id="size" class="w-6/12 md:w-5/12">
+                        <img src="{% static 'img/product images/jacket.jpg' %}" alt="jacket">
+                    </div>
+                </div>
+                <div class="flex rounded-b-2xl border-2 p-2 mx-7 bg-white shadow-sm">
+                    <div class="flex-1 flex flex-col">
+                        <h1 class="text-center font-bold">Name: Jacket</h1>
+                        <p>Price: 100php</p>
+                        <p>Quantity: 123</p>
+                        <form method="POST" class="mt-2 mb-1">
+                            {% csrf_token %}
+                            <p class="text-center"><button class="bg-slate-950 w-32 h-10 rounded-full text-white">Add To Cart</button></p>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div id="card" class="container max-w-full mt-5">
+                <!---->
+                <div id="image" class="flex flex-col items-center rounded-t-2xl border-2 mx-7 bg-white shadow-sm">
+                    <div id="size" class="w-6/12 md:w-5/12">
+                        <img src="{% static 'img/product images/tshirt.png' %}" alt="jacket">
+                    </div>
+                </div>
+                <div class="flex rounded-b-2xl border-2 p-2 mx-7 bg-white shadow-sm">
+                    <div class="flex-1 flex flex-col">
+                        <h1 class="text-center font-bold">Name: Jacket</h1>
+                        <p>Price: 100php</p>
+                        <p>Quantity: 123</p>
+                        <form method="POST" class="mt-2 mb-1">
+                            {% csrf_token %}
+                            <p class="text-center"><button class="bg-slate-950 w-32 h-10 rounded-full text-white">Add To Cart</button></p>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+
+            <div id="card" class="container max-w-full mt-5">
+                <!---->
+                <div id="image" class="flex flex-col items-center rounded-t-2xl border-2 mx-7 bg-white shadow-sm">
+                    <div id="size" class="w-6/12 md:w-5/12">
+                        <img src="{% static 'img/product images/jacket.jpg' %}" alt="jacket">
+                    </div>
+                </div>
+                <div class="flex rounded-b-2xl border-2 p-2 mx-7 bg-white shadow-sm">
+                    <div class="flex-1 flex flex-col">
+                        <h1 class="text-center font-bold">Name: Jacket</h1>
+                        <p>Price: 100php</p>
+                        <p>Quantity: 123</p>
+                        <form method="POST" class="mt-2 mb-1">
+                            {% csrf_token %}
+                            <p class="text-center"><button class="bg-slate-950 w-32 h-10 rounded-full text-white">Add To Cart</button></p>
+                        </form>
+                    </div>
+                </div>
+            </div>
+    </div>      
+
+    
+
+    <!--Cart-->
+    <div id="cart-content" class="right-0 bottom-0 z-50 border-l-2 shadow-2xl rounded-l-2xl w-11/12 md:w-96 fixed h-screen hidden bg-white text-black">
+           <div class="relative">
+                <div  class="text-3xl absolute w-full font-bold top-7">
+                    <h1 class="text-center">Cart</h1>
+                </div>
+                <div class="absolute right-0 font-bold mr-4 mt-4 text-lg"  id="close">
+                    <h1 class="hover:cursor-pointer"><a id="close-cart">X</a></h1>
+                </div>
+           </div>
+    </div>
+    
+    <!--Menu-->
+    <div id="menu-content" class="right-0 bottom-0 border-l-2 shadow-2xl rounded-l-2xl w-11/12 md:w-96 fixed h-screen hidden bg-white text-black">
+        <div class="relative">
+            <div  class="text-3xl absolute w-full font-bold top-7">
+                <h1 class="text-center">Menu</h1>
+            </div>
+                <div class="absolute right-0 font-bold mr-4 mt-4 text-lg"  id="close">
+                 <h1 class="hover:cursor-pointer"><a id="close-menu">X</a></h1>
+             </div>
+             <nav class="absolute left-0 top-24 text-2xl ml-2">
+                <ul class="flex flex-col container max-w-full">
+                    {% if login %}
+                        <li><a href="{% url 'sign_out' %}">Sign Out</a></li>
+                        <li class="mt-4"><a href="#">Profile</a></li>
+                    {% else %}
+                        <li><a href="{% url 'sign_in' %}">Sign In</a></li>
+                    {% endif %}
+                    <li class=" mt-4"><a href="#">Categories</a></li>
+                </ul>
+             </nav>
+        </div>
+    </div>
+
+    <script>
+        const cart = document.querySelector('#cart')
+        const cart_content = document.querySelector('#cart-content')
+        const close_cart = document.querySelector('#close-cart')
+
+        const menu = document.querySelector('#menu')
+        const menu_content = document.querySelector('#menu-content')
+        const close_menu = document.querySelector('#close-menu')
+
+        function display(element, value){
+            element.style.display = value
+        }
+
+        function showCart(){
+            display(cart_content, 'block')
+            display(menu_content, 'none')
+        }
+
+        cart.addEventListener('click', () => {
+            display(cart_content, 'block')
+            display(menu_content, 'none')
+        })
+
+        close_cart.addEventListener('click', () => {
+            display(cart_content, 'none')
+        })
+
+
+        menu.addEventListener('click', () => {
+            display(menu_content, 'block')
+            display(cart_content, 'none')
+        })
+
+        close_menu.addEventListener('click', () => {
+            display(menu_content, 'none')
+        })
+    </script>
+{% endblock %}
