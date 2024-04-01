@@ -3,7 +3,7 @@ from django.db import models
 # Create your models here.
 class Item(models.Model):
     item_id = models.AutoField(primary_key=True)
-    item_image = models.ImageField(upload_to='./products/img', default='Null')
+    item_image = models.ImageField(upload_to='./main/static/img/products', default='Null')
     item_name = models.CharField(max_length=200)
     item_price = models.IntegerField()
     item_quantity = models.IntegerField()

@@ -1,5 +1,4 @@
 from django.shortcuts import render
-
 import sys
 sys.path.insert(0, '..')
 
