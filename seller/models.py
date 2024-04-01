@@ -6,7 +6,7 @@ class Item(models.Model):
     item_image = models.ImageField(upload_to='product/images', default='Null')
     item_name = models.CharField(max_length=200)
     item_price = models.IntegerField()
-    item_quantity = models.ImageField()
+    item_quantity = models.IntegerField()
 
 
 class Cart(models.Model):
