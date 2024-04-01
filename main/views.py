@@ -1,5 +1,9 @@
 from django.shortcuts import render
 
+import sys
+sys.path.insert(0, '..')
+
+from seller.models import Item
 # Create your views here.
 
 def index(request):
@@ -15,7 +19,8 @@ def index(request):
 
 def shop(request):
     data = {
-        'login' : False
+        'login' : False,
+        'items' : Item.objects.all()
     }
 
     if 'user_email' in request.session:
