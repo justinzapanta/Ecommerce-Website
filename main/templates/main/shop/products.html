@@ -31,15 +31,17 @@
 
 
 
-
     <!--HEADER FOR MOBILE VIEW-->
+    <form method="POST" class="container max-w-full ">
     <header class="container border-b-2 rounded-b-md pb-1 shadow-sm sticky top-0 max-w-full md:justify-between bg-gray-50 text-black mt-2 md:hidden">
         <ul class="flex mx-2 justify-between">
             <li class="mr-1 mt-1"><a id="menu" class="hover:cursor-pointer"><i class="fas fa-regular fa-bars fa-2x"></i></a></li>
-            <input placeholder="Search" class="border-solid border-2 w-9/12 pl-1 h-10 rounded-md" type="text">
+            {% csrf_token %}
+            <input id="mobile-view-search" name="mobile-view-search" placeholder="Search" class="border-solid w-9/12 border-2 pl-1 h-10 rounded-md" type="text">
             <li class="ml-1"></li><a id="cart" class="hover:cursor-pointer mt-1"><i class="fas fa-shopping-cart fa-2x"></i></a></li>
         </ul>
     </header>
+    </form>
 {% endblock %}
 
 
@@ -56,48 +58,63 @@
     </div>
 
 
-
-
-
-
-
     <!--Content Container-->
-    <div class=" mt-2 md:flex flex-col">
+    <div id="content" class=" mt-2 flex-col">
+
         <!--SEARCH -->
         <div class="container max-w-full hidden md:block mt-3">
-            <form class="flex justify-center">
-                <input placeholder="Search" type="text" class="border-2 border-slate-500 pl-2 rounded-sm w-8/12 h-11 mr-5" >
+            <form class="flex justify-center" method="POST">
+                {% csrf_token %}
+                <input name="search" placeholder="Search" type="text" class="border-2 border-slate-500 pl-2 rounded-sm w-8/12 h-11 mr-5" >
                 <button class="w-36 h-11 font-bold bg-slate-950 rounded-lg text-white">Search</button>
             </form>
         </div>
         
-
-        {% for item in items %}
-            <!--Cart Container-->
-            <div id="product-container" class="container max-w-full  mt-2 md:flex">
-
-                <div id="card" class="container max-w-full mt-5">
-                    <!---->
-                    <div id="image" class="flex flex-col items-center rounded-t-2xl border-2 mx-7 bg-white shadow-sm">
-                        <div id="size" class="w-6/12 md:w-5/12">
-                            <img src="{{ item.item_image.url }}" alt="jacket">
-                        </div>
-                    </div>
-                    <div class="flex rounded-b-2xl border-2 p-2 mx-7 bg-white shadow-sm">
-                        <div class="flex-1 flex flex-col">
-                            <h1 class="text-center font-bold">Name: {{ item.item_name }}</h1>
-                            <p>Price: {{ item.item_price }}</p>
-                            <p>Quantity: {{ item.quantity }}</p>
-                            <form method="POST" class="mt-2 mb-1">
-                                {% csrf_token %}
-                                <p class="text-center"><button class="bg-slate-950 w-32 h-10 rounded-full text-white">Add To Cart</button></p>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        {% endfor %}
+        <div id="product-categories" class="flex">
             
+            <!--Categories-->
+            <div id="categories" class=" border-2 rounded-tr-xl text text-right pt-1 pr-8 font-bold  mt-7 w-60 h-a hidden md:block bg-white">
+                <h1 class="text-center mt-1">Categories</h1>
+                {% for type in types %}
+                    <h1 class="mt-2"><a class="hover:cursor-pointer">{{type}}</a></h1>     
+                {% endfor %}
+            </div>
+
+            <div id="product-col" class="md:flex md:flex-col">
+                {% for item_list in items %}
+                    <!--Card Container-->
+                    <div id="items-container" value="{{forloop.counter}}" class=" mt-2 md:flex md:flex-1">
+                        {% for item in item_list %}
+                            <!--ca-->
+                            <div id="card" class="container max-w-full md:max-w-80 mt-5">
+                                <div id="image" class="flex flex-col items-center md:py-4 rounded-t-2xl border-2 mx-7 bg-white shadow-sm">
+                                    <div id="size" class="w-6/12 md:w-7/12">
+                                        <img src="{{ item.item_image.url }}" alt="jacket">
+                                    </div>
+                                </div>
+                                <div class="flex rounded-b-2xl border-2 p-2 mx-7 bg-white shadow-sm">
+                                    <div class="flex-1 flex flex-col md:text-md">
+                                        <h1 class="text-center font-bold">Name: {{ item.item_name }}</h1>
+                                        <p>Price: {{ item.item_price }}</p>
+                                        <p>Quantity: {{ item.quantity }}</p>
+                                        <form method="POST" class="mt-2 mb-1">
+                                            {% csrf_token %}
+                                            <p class="text-center"><button class="bg-slate-950 w-32 h-10 rounded-full text-white">Add To Cart</button></p>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+            </div>
+            
+            <!--For next page-->
+            <div>
+
+            </div>
+
+        </div>
     </div>      
 
     
