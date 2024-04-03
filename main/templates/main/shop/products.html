@@ -85,7 +85,7 @@
                     <!--Card Container-->
                     <div id="items-container" value="{{forloop.counter}}" class=" mt-2 md:flex md:flex-1">
                         {% for item in item_list %}
-                            <!--ca-->
+                            <!--card-->
                             <div id="card" class="container max-w-full md:max-w-80 mt-5">
                                 <div id="image" class="flex flex-col items-center md:py-4 rounded-t-2xl border-2 mx-7 bg-white shadow-sm">
                                     <div id="size" class="w-6/12 md:w-7/12">
@@ -97,10 +97,7 @@
                                         <h1 class="text-center font-bold">Name: {{ item.item_name }}</h1>
                                         <p>Price: {{ item.item_price }}</p>
                                         <p>Quantity: {{ item.quantity }}</p>
-                                        <form method="POST" class="mt-2 mb-1">
-                                            {% csrf_token %}
-                                            <p class="text-center"><button class="bg-slate-950 w-32 h-10 rounded-full text-white">Add To Cart</button></p>
-                                        </form>
+                                        <p class="text-center"><button class="bg-slate-950 w-32 h-10 rounded-full text-white">Add To Cart</button></p>
                                     </div>
                                 </div>
                             </div>
@@ -127,6 +124,25 @@
                 </div>
                 <div class="absolute right-0 font-bold mr-4 mt-4 text-lg"  id="close">
                     <h1 class="hover:cursor-pointer"><a id="close-cart">X</a></h1>
+                </div>
+           </div>
+
+
+           <div id="cart-items" class="container max-w-full mt-20 pl-3 flex-col">
+            
+                <hr>
+                <div id="card-cart-item" class="h-20">
+                    <img class="w-1/5 float-start mr-7" src="{% static 'img/model-2.png' %}" alt="">
+                    
+                    <div class="flex flex-col mt-2">
+                        <a class="hover:cursor-pointer text-right font-bold mr-4">Remove</a>
+                        <h1 class="mt-1">Name: Jacket</h1>
+                        <div class="mt-5">
+                            <button class="bg-slate-950 w-8 h-8 text-white rounded-md">-</button>
+                                <input class="w-24 border-2 h-8 rounded-md text-center" type="number">
+                            <button class="bg-slate-950 w-8 h-8 text-white rounded-md">+</button>
+                        </div>
+                    </div>
                 </div>
            </div>
     </div>

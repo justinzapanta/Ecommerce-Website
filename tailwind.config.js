@@ -5,7 +5,7 @@ module.exports = {
     extend: {
       'colors' : {
         'model-background' : {
-          'gray' : '#686868'
+        'gray' : '#686868'
         }
       }
     },

@@ -1,6 +1,4 @@
-import sys
-sys.path.insert(0, '..')
-from seller.models import Item
+from seller.models import Item, Cart
 
 
 class Items():
@@ -36,6 +34,3 @@ class Items():
 
         return item_list
     
-
-class Cart():
-    pass
