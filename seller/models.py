@@ -1,5 +1,6 @@
 from django.db import models
-
+from django.contrib.auth.models import User
+from django.utils import timezone
 # Create your models here.
 class Item(models.Model):
     item_id = models.AutoField(primary_key=True)
@@ -15,19 +16,14 @@ class Item(models.Model):
 
 class Cart(models.Model):
     cart_id = models.AutoField(primary_key=200)
-    item_id = models.ForeignKey(Item, on_delete=models.CASCADE)
-    cart_quantity = models.IntegerField()
-    cart_is_checkedout = models.BooleanField()
-
-    def __str__(self):
-        return self.cart_id
+    user_info = models.ForeignKey(User, on_delete=models.CASCADE, default=None)
+    item_info = models.ForeignKey(Item, on_delete=models.CASCADE)
+    cart_item_quantity = models.IntegerField(default=1)
+    cart_is_checkedout = models.BooleanField(default=False)
 
 
 class Transaction(models.Model):
     transaction_id = models.AutoField(primary_key=True)
-    cart_id = models.ForeignKey(Cart, on_delete=models.CASCADE)
+    cart_info = models.ForeignKey(Cart, on_delete=models.CASCADE)
     transaction_total_price = models.IntegerField()
     transaction_date = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return self.transaction_id
