@@ -32,7 +32,7 @@
 
 
     <!--HEADER FOR MOBILE VIEW-->
-    <form method="POST" class="container max-w-full ">
+    <form method="POST" class="container max-w-full sticky top-0">
     <header class="container border-b-2 rounded-b-md pb-1 shadow-sm sticky top-0 max-w-full md:justify-between bg-gray-50 text-black mt-2 md:hidden">
         <ul class="flex mx-2 justify-between">
             <li class="mr-1 mt-1"><a id="menu" class="hover:cursor-pointer"><i class="fas fa-regular fa-bars fa-2x"></i></a></li>
@@ -97,7 +97,7 @@
                                         <h1 class="text-center font-bold">Name: {{ item.item_name }}</h1>
                                         <p>Price: {{ item.item_price }}</p>
                                         <p>Quantity: {{ item.quantity }}</p>
-                                        <p class="text-center"><button value-id="{{item.item_id}}" id="add-to-cart-button" class="bg-slate-950 w-32 h-10 rounded-full text-white" onclick="add_item(this)">Add To Cart</button></p>
+                                        <p class="text-center"><button value-id="{{item.item_id}}" value-image="{{ item.item_image.url }}" id="add-to-cart-button" class="bg-slate-950 w-32 h-10 rounded-full text-white" onclick="add_item(this)">Add To Cart</button></p>
                                     </div>
                                 </div>
                             </div>
@@ -130,7 +130,7 @@
 
            <div id="cart-items" class="border-b-2 border-t-2 container max-w-full h-3/4 md:h-3/5 mt-20 pl-3 flex-col overflow-y-auto">
                 {% for cart in cart_items %}
-                    <hr class="mt-10 border-4 hr-{{cart.cart_id}}">
+                    <hr class="mt-10 border-2 hr-{{cart.cart_id}}">
                     <div id="card-cart-item" class="h-20 mt-5 cart-{{cart.cart_id}} ">
                         <img class="w-1/5 float-start mr-7" src="{{ cart.item_info.item_image.url }}" alt="Error">
                         <div class="flex flex-col mt-2">
@@ -138,7 +138,7 @@
                             <h1 class="mt-1">{{cart.item_info.item_name}}</h1>
                             <div class="mt-5">
                                 <button class="bg-slate-950 w-8 h-8 text-white rounded-md">-</button>
-                                    <input class="w-24 border-2 h-8 rounded-md text-center" value="{{cart.cart_item_quantity}}" type="number">
+                                    <input name='quantity-input' class="w-24 border-2 h-8 rounded-md text-center" value="{{cart.cart_item_quantity}}" type="number">
                                 <button class="bg-slate-950 w-8 h-8 text-white rounded-md">+</button>
                             </div>
                         </div>
@@ -211,23 +211,58 @@
 
         
 //im practicing using XMLHttpRequest thats whu i dont use function for XMLHttp even the code is reapeting
-        function add_item(_this){
+        async function add_item(_this){
             const request = new XMLHttpRequest
-            request.open('POST', 'http://127.0.0.1:8000/api/cart/add-item/', true)
+            await request.open('POST', 'http://127.0.0.1:8000/api/cart/add-item/', true)
             request.setRequestHeader('Content-Type', 'application/json')
+            const value_id = _this.getAttribute("value-id")
+
+            const new_card = document.createElement('div')
+            new_card.classList.add('h-20', 'mt-5', `new_cart-${value_id}`)
+            new_card.innerHTML = `
+                <hr class="mt-10 border-2 hr-${_this.getAttribute('value-id')}">
+                <div id="card-cart-item" class="h-20 mt-5 cart-${value_id} ">
+                    <img class="w-1/5 float-start mr-7" src="${_this.getAttribute('value-image')}" alt="Error">
+                    <div class="flex flex-col mt-2">
+                        <a id="none" value-cart-id="${value_id}" class="hover:cursor-pointer text-right font-bold mr-4" onclick="delete_item(this)">Remove</a>
+                        <h1 class="mt-1">Item Name</h1>
+                        <div class="mt-5">
+                            <button class="bg-slate-950 w-8 h-8 text-white rounded-md">-</button>
+                                <input name='quantity-input' class="w-24 border-2 h-8 rounded-md text-center" value="1" type="number autocomplete='off'">
+                            <button class="bg-slate-950 w-8 h-8 text-white rounded-md">+</button>
+                        </div>
+                    </div>
+                </div>
+            `
+
+            request.onload = ()=> {
+                if (request.status == 201){
+                    document.querySelector('#cart-items').appendChild(new_card)
+                }
+            }
             request.send(JSON.stringify({id : _this.getAttribute('value-id')}))
+
         }
 
 
-        function delete_item(_this){
+
+        async function delete_item(_this){
             const request = new XMLHttpRequest
-            request.open('POST', 'http://127.0.0.1:8000/api/cart/delete-item')
+            await request.open('POST', 'http://127.0.0.1:8000/api/cart/delete-item')
             request.setRequestHeader('Content-Type', 'application/json')
-            request.send(JSON.stringify({cart_id : _this.getAttribute('id')}))
-            
-            const cart_id = _this.getAttribute('id')
-            document.querySelector(`.cart-${cart_id}`).style.display = 'none'
-            document.querySelector(`.hr-${cart_id}`).style.display = 'none'
+            cart_id = _this.getAttribute('id')
+
+            if (cart_id == 'none'){
+                cart_id = _this.getAttribute('value-cart-id')
+                request.send(JSON.stringify({item_id : cart_id}))
+            }else{
+                request.send(JSON.stringify({cart_id : cart_id}))
+            }
+
+
+            document.querySelector(`.cart-${cart_id}`).remove()
+            document.querySelector(`.hr-${cart_id}`).remove()
+            document.querySelector(`.new_cart-${cart_id}`).remove()
         }
 
 

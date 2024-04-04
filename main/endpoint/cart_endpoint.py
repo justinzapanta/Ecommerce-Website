@@ -19,23 +19,29 @@ def add_item(request):
             if not cart:
                 cart = Cart(item_info=item, user_info=user)
                 cart.save()
-                print('added to cart')
                 return JsonResponse({'message' : 'success'}, status=201)
             else:
-                print('already added')
-                return JsonResponse({'message' : 'aleady added'}, status=201)
-    return JsonResponse({'message', 'Failed'}, status=404)
+                return JsonResponse({'message' : 'aleady added'}, status=202)
+    return JsonResponse({'message', 'Failed'}, status=203)
 
 
 @csrf_exempt
 def delete_item(request):
     if request.method == 'POST':
         data = json.loads(request.body)
-        cart = Cart.objects.get(cart_id=data.get('cart_id'))
-        cart.delete()
-        
+
+        if not 'item_id' in data and 'cart_id' in data:
+            print(data.get('cart_id'))
+            cart = Cart.objects.get(cart_id=data.get('cart_id'))
+            cart.delete()
+
+        else:
+            item = Item.objects.get(item_id=data.get('item_id'))
+            cart = Cart.objects.get(item_info=item)
+            cart.delete()
+
         return JsonResponse({'message' : 'Deleted'}, status=201)
-    return JsonResponse({'message' : 'Failed'}, status=404)
+    return JsonResponse({'message' : 'Failed'}, status=203)
 
 
 
