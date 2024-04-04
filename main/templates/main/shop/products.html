@@ -128,13 +128,13 @@
            </div>
 
 
-           <div id="cart-items" class="container max-w-full h-3/4 md:h-3/5 mt-20 pl-3 flex-col overflow-y-auto">
+           <div id="cart-items" class="border-b-2 border-t-2 container max-w-full h-3/4 md:h-3/5 mt-20 pl-3 flex-col overflow-y-auto">
                 {% for cart in cart_items %}
-                    <hr class="mt-10">
-                    <div id="card-cart-item" class="h-20 mt-5">
+                    <hr class="mt-10 border-4 hr-{{cart.cart_id}}">
+                    <div id="card-cart-item" class="h-20 mt-5 cart-{{cart.cart_id}} ">
                         <img class="w-1/5 float-start mr-7" src="{{ cart.item_info.item_image.url }}" alt="Error">
                         <div class="flex flex-col mt-2">
-                            <a class="hover:cursor-pointer text-right font-bold mr-4">Remove</a>
+                            <a id="{{cart.cart_id}}" class="hover:cursor-pointer text-right font-bold mr-4" onclick="delete_item(this)">Remove</a>
                             <h1 class="mt-1">{{cart.item_info.item_name}}</h1>
                             <div class="mt-5">
                                 <button class="bg-slate-950 w-8 h-8 text-white rounded-md">-</button>
@@ -194,6 +194,7 @@
             display(menu_content, 'none')
         })
 
+
         close_cart.addEventListener('click', () => {
             display(cart_content, 'none')
         })
@@ -209,19 +210,27 @@
         })
 
         
+//im practicing using XMLHttpRequest thats whu i dont use function for XMLHttp even the code is reapeting
         function add_item(_this){
             const request = new XMLHttpRequest
             request.open('POST', 'http://127.0.0.1:8000/api/cart/add-item/', true)
             request.setRequestHeader('Content-Type', 'application/json')
-            request.send(JSON.stringify({
-                id : _this.getAttribute('value-id')
-            }))
-
-            request.onload = () => {
-                if (this.status == 201){
-                    console.log(this.responseText)
-                }
-            }
+            request.send(JSON.stringify({id : _this.getAttribute('value-id')}))
         }
+
+
+        function delete_item(_this){
+            const request = new XMLHttpRequest
+            request.open('POST', 'http://127.0.0.1:8000/api/cart/delete-item')
+            request.setRequestHeader('Content-Type', 'application/json')
+            request.send(JSON.stringify({cart_id : _this.getAttribute('id')}))
+            
+            const cart_id = _this.getAttribute('id')
+            document.querySelector(`.cart-${cart_id}`).style.display = 'none'
+            document.querySelector(`.hr-${cart_id}`).style.display = 'none'
+        }
+
+
+        
     </script>
 {% endblock %}
