@@ -19,12 +19,14 @@ def shop(request):
         'login' : False,
         'items' : items.items,
         'types' : items.get_type(),
+        'item_count' : 0
     }
 
     if 'user_email' in request.session:
         data['login'] = True
         email = request.session['user_email']
         data['cart_items'] = Cart.objects.filter(user_info=User.objects.get(username=email))
+        data['item_count'] = len(data['cart_items'])
 
     if request.method == 'POST':
         search = ''
