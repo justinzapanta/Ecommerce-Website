@@ -31,7 +31,7 @@ def delete_item(request):
     if 'user_email' in request.session:
         if request.method == 'POST':
             data = json.loads(request.body)
-            user = User.objects.get(email=request.session['user_email'])
+            user = User.objects.get(username=request.session['user_email'])
             if not 'item_id' in data:
                 print('run')
                 cart = Cart.objects.get(cart_id=data.get('cart_id'), user_info=user)
