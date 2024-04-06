@@ -19,7 +19,7 @@ class Items():
         return Item.objects.filter(item_name__icontains=search)
     
 
-    def for_column(self, items, page):
+    def for_column(self, items):
         item_list = []
         temp_list = []
 

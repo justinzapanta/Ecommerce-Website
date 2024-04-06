@@ -12,5 +12,6 @@ urlpatterns = [
 
     #End Point
     path('api/cart/add-item/', cart_endpoint.add_item),
-    path('api/cart/delete-item', cart_endpoint.delete_item),
+    path('api/cart/delete-item/', cart_endpoint.delete_item),
+    path('api/cart/update-quantity/', cart_endpoint.update_quantity),
 ] + static( settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

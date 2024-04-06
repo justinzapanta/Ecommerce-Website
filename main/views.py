@@ -2,6 +2,7 @@ from django.shortcuts import render
 from .items import Items
 from seller.models import Cart
 from django.contrib.auth.models import User
+import json
 # Create your views here.
 
 def index(request):
@@ -12,7 +13,6 @@ def index(request):
 
     return render(request, 'main/index.html', data)
 
-
 def shop(request):
     items = Items()
     data = {
@@ -22,12 +22,15 @@ def shop(request):
         'item_count' : 0
     }
 
+    #check if the user is login
     if 'user_email' in request.session:
         data['login'] = True
         email = request.session['user_email']
         data['cart_items'] = Cart.objects.filter(user_info=User.objects.get(username=email))
         data['item_count'] = len(data['cart_items'])
 
+
+    #for search
     if request.method == 'POST':
         search = ''
         if 'search' in request.POST:
@@ -38,5 +41,7 @@ def shop(request):
         data['items'] = items.search(search)
         data['types'] = items.get_type(search)
     
-    data['items'] = items.for_column(data['items'], 1)
+    
+    items = items.for_column(data['items'])
+    data['items'] = items
     return render(request, 'main/shop/products.html', data)

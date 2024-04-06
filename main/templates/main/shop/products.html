@@ -12,7 +12,7 @@
     <!--HEADER FOR DeskTop View-->
     <header class="container sticky top-0 max-w-full md:block hidden z-50 text-white bg-slate-950 py-2">
         <div  class="w-6 h-6 text-sm absolute right-4 rounded-full font-bold bg-red-500">
-            <h1 id="counter" class="text-center">{{item_count}}</h1>
+            <h1 id="counter" class="text-center hover:cursor-pointer" onclick="showCart()">{{item_count}}</h1>
         </div>
         <div class="flex flex-col md:flex-row">
             <h1 class="flex-1 text-3xl text-center md:text-left md:ml-5 ">Ecommerce Website</h1>
@@ -36,7 +36,10 @@
 
     <!--HEADER FOR MOBILE VIEW-->
     <form method="POST" class="container max-w-full sticky top-0">
-    <header class="container border-b-2 rounded-b-md pb-1 shadow-sm sticky top-0 max-w-full md:justify-between bg-gray-50 text-black mt-2 md:hidden">
+    <header class="container border-b-2 rounded-b-md pb-1 shadow-sm sticky pt-1 top-0 max-w-full md:justify-between bg-gray-50 text-black mt-2 md:hidden">
+        <div  class="w-5 h-4 text-sm absolute right-0 rounded-full font-bold bg-red-500">
+            <h1 id="mobile-counter" class="text-center text-white" onclick="showCart()">{{item_count}}</h1>
+        </div>
         <ul class="flex mx-2 justify-between">
             <li class="mr-1 mt-1"><a id="menu" class="hover:cursor-pointer"><i class="fas fa-regular fa-bars fa-2x"></i></a></li>
             {% csrf_token %}
@@ -98,9 +101,9 @@
                                 <div class="flex rounded-b-2xl border-2 p-2 mx-7 bg-white shadow-sm">
                                     <div class="flex-1 flex flex-col md:text-md">
                                         <h1 class="text-center font-bold">Name: {{ item.item_name }}</h1>
-                                        <p>Price: {{ item.item_price }}</p>
-                                        <p>Quantity: {{ item.quantity }}</p>
-                                        <p class="text-center"><button value-id="{{item.item_id}}" value-image="{{ item.item_image.url }}" id="add-to-cart-button" class="bg-slate-950 w-32 h-10 rounded-full text-white" onclick="add_item(this)">Add To Cart</button></p>
+                                        <p class="mb-2">Price: {{ item.item_price }}</p>
+                                        <p id="quantity-{{item.item_id}}" value-quantity="{{item.item_quantity}}" >Quantity: {{ item.item_quantity }}</p>
+                                        <p class="text-center mt-3 mb-3"><button value-quantity="{{item.item_quantity}}" value-price="{{item.item_price}}"  value-name="{{item.item_name}}" value-id="{{item.item_id}}" value-image="{{ item.item_image.url }}" id="add-to-cart-button" class="bg-slate-950 w-32 h-10 rounded-full text-white" onclick="add_item(this)">Add To Cart</button></p>
                                     </div>
                                 </div>
                             </div>
@@ -110,9 +113,6 @@
             </div>
             
             <!--For next page-->
-            <div>
-
-            </div>
 
         </div>
     </div>      
@@ -132,6 +132,7 @@
 
 
            <div id="cart-items" class="border-b-2 border-t-2 container max-w-full h-3/4 md:h-3/5 mt-20 pl-3 flex-col overflow-y-auto">
+
                 {% for cart in cart_items %}
                     <hr class="mt-10 border-2 hr-{{cart.cart_id}}">
                     <div id="card-cart-item" class="h-20 mt-5 cart-{{cart.cart_id}} ">
@@ -139,16 +140,21 @@
                         <div class="flex flex-col mt-2">
                             <a id="{{cart.cart_id}}" class="hover:cursor-pointer text-right font-bold mr-4" onclick="delete_item(this)">Remove</a>
                             <h1 class="mt-1">{{cart.item_info.item_name}}</h1>
-                            <div class="mt-5">
-                                <button class="bg-slate-950 w-8 h-8 text-white rounded-md">-</button>
-                                    <input name='quantity-input' class="w-24 border-2 h-8 rounded-md text-center" value="{{cart.cart_item_quantity}}" type="number">
-                                <button class="bg-slate-950 w-8 h-8 text-white rounded-md">+</button>
+                            <div class="mt-1">
+                                <h1 id="cart-price-{{cart.cart_id}}" value-price="{{cart.item_info.item_price}}">Price: {{cart.cart_item_total_price}}</h1>
+
+                                <button value-id="{{cart.cart_id}}" class="bg-slate-950 w-8 h-8 text-white rounded-md" onclick="reloaded_decrease_quantity(this)">-</button>
+                                    <input id="cart-input-{{cart.cart_id}}" value-quantity="{{cart.item_info.item_quantity}}"     value-id="{{cart.cart_id}}" name='quantity-input' class="w-24 border-2 h-8 rounded-md text-center" value="{{cart.cart_item_quantity}}" type="number" onblur="cart_input(this)">
+                                <button value-id="{{cart.cart_id}}" class="bg-slate-950 w-8 h-8 text-white rounded-md" onclick="reloaded_increase_quantity(this)">+</button>
+                            
                             </div>
                         </div>
                     </div>
                 {% endfor %}
+
                 <button class="rounded-md right-20 h-12 w-52 absolute bottom-10 bg-slate-950 text-white">Place Order</button>
            </div>
+           <h1 class="text-xl text-center mt-7 font-bold">Total: </h1>
     </div>
     
     <!--Menu-->
@@ -175,6 +181,138 @@
     </div>
 
     <script>
+        // Quantity
+
+        function request_quantity(link, dict){
+            const request = new XMLHttpRequest
+            request.open('POST', link)
+            request.setRequestHeader('Content-Type', 'application/json')
+            request.send(JSON.stringify(dict))
+        }
+
+        function reloaded_increase_quantity(this_){
+            const id = this_.getAttribute('value-id')
+            const input = document.querySelector(`#cart-input-${id}`)
+            const h1_price = document.querySelector(`#cart-price-${id}`)
+            const price = h1_price.getAttribute('value-price')
+            const quantity = input.getAttribute('value-quantity')
+            
+            if (parseInt(input.value) != parseInt(quantity)){
+                input.value = parseInt(input.value) + 1
+                h1_price.textContent = price * parseInt(input.value)
+            }
+
+            request_quantity(
+                'http://127.0.0.1:8000/api/cart/update-quantity/',
+                {id : id, new_quantity : input.value }
+            )
+        }
+
+        
+        function cart_input(this_){
+            const id = this_.getAttribute('value-id')
+            const h1_price = document.querySelector(`#cart-price-${id}`)
+            const quantity = this_.getAttribute('value-quantity')
+            const price = h1_price.getAttribute('value-price')
+
+            if (parseInt(this_.value) >= parseInt(quantity)){
+                this_.value = parseInt(quantity)
+            }
+
+            h1_price.textContent = price * parseInt(this_.value)
+            request_quantity(
+                'http://127.0.0.1:8000/api/cart/update-quantity/',
+                {id : id, new_quantity : this_.value }
+            )
+        }
+
+
+        function reloaded_decrease_quantity(this_){
+            const id = this_.getAttribute('value-id')
+            const input = document.querySelector(`#cart-input-${id}`)
+            const h1_price = document.querySelector(`#cart-price-${id}`)
+            const price = h1_price.getAttribute('value-price')
+            const quantity = input.getAttribute('value-quantity')
+            
+            if (parseInt(input.value) >= 2){
+                input.value = parseInt(input.value) - 1
+                h1_price.textContent = price * parseInt(input.value)
+            }
+
+            request_quantity(
+                'http://127.0.0.1:8000/api/cart/update-quantity/',
+                {id : id, new_quantity : input.value }
+            )
+        }
+
+
+
+
+
+        //  Quantity for the user did not reload the page
+        //  Increate Quantiy
+        function increase_quantity(this_){
+            const id = this_.getAttribute('value-id')
+            const quantity_textBox = document.querySelector(`#input-${id}`)
+            const item_quantity = document.querySelector(`#quantity-${id}`)
+            const price = document.querySelector(`#price-id-${id}`)
+            const current_price = price.getAttribute('value-current-price')
+
+            if (parseInt(quantity_textBox.value) != parseInt(item_quantity.getAttribute('value-quantity'))){
+                quantity_textBox.value = parseInt(quantity_textBox.value) + 1
+                price.textContent =  parseInt(quantity_textBox.value) * parseInt(current_price)
+            }
+
+            request_quantity(
+                'http://127.0.0.1:8000/api/cart/update-quantity/',
+                {id : id, new_quantity : quantity_textBox.value , new_item : true}
+            )
+        }
+
+
+
+        //  Update Quantity
+        function quantity_textBox(event, this_){
+            const max_quantity = this_.getAttribute('value-quantity')
+            const id = this_.getAttribute('value-id')
+            const p_price = document.querySelector(`#price-id-${id}`)
+            const current_price = p_price.getAttribute('value-current-price')
+
+            if (parseInt(max_quantity) <= parseInt(this_.value)){
+                this_.value = max_quantity
+            }
+
+            p_price.textContent = parseInt(current_price) * parseInt(this_.value)
+
+            request_quantity(
+                'http://127.0.0.1:8000/api/cart/update-quantity/',
+                {id : id, new_quantity : this_.value, new_item : true}
+            )
+        }
+
+
+
+        //  Decrease Quantity
+        function decrease_quantity(this_){
+            const id = this_.getAttribute('value-id')
+            const quantity_textBox = document.querySelector(`#input-${id}`)
+            const item_quantity = document.querySelector(`#quantity-${id}`)
+            const price = document.querySelector(`#price-id-${id}`)
+            const current_price = price.getAttribute('value-current-price')
+
+            if (parseInt(quantity_textBox.value) >= 2){
+                quantity_textBox.value = parseInt(quantity_textBox.value) - 1
+                price.textContent = parseInt(current_price) * parseInt(quantity_textBox.value)
+            }
+
+            request_quantity(
+                'http://127.0.0.1:8000/api/cart/update-quantity/',
+                {id : id, new_quantity : quantity_textBox.value , new_item : true}
+            )
+        }
+
+
+
         const cart = document.querySelector('#cart')
         const cart_content = document.querySelector('#cart-content')
         const close_cart = document.querySelector('#close-cart')
@@ -213,14 +351,18 @@
         })
 
         
-//im practicing using XMLHttpRequest thats whu i dont use function for XMLHttp even the code is reapeting
-
+        // Displaying Item on cart for the user did not reload the page
         const counter = document.querySelector('#counter')
+        const mobile_counter = document.querySelector('#mobile-counter')
         async function add_item(_this){
             const request = new XMLHttpRequest
             await request.open('POST', 'http://127.0.0.1:8000/api/cart/add-item/', true)
             request.setRequestHeader('Content-Type', 'application/json')
-            const value_id = _this.getAttribute("value-id")
+            const id = _this.getAttribute('value-id')
+            const name = _this.getAttribute('value-name')
+            const price = _this.getAttribute('value-price')
+            const quantity = _this.getAttribute('value-quantity')
+       
 
             let mt = 'mt'
             if (counter.textContent != 0){
@@ -228,28 +370,34 @@
             }
 
             const new_card = document.createElement('div')
-            new_card.classList.add('h-20', mt, `new_cart-${value_id}`)
+            new_card.classList.add('h-20', mt, `new_cart-${id}`)
 
             new_card.innerHTML = `
-            <hr class="mt-10 border-2 hr-${_this.getAttribute('value-id')}">
-                <div id="card-cart-item" class="h-20 mt-5 cart-${value_id} ">
+            <hr class="mt-10 border-2 hr-${id}">
+                <div id="card-cart-item" class="h-20 mt-5 cart-${id} ">
                     <img class="w-1/5 float-start mr-7" src="${_this.getAttribute('value-image')}" alt="Error">
                     <div class="flex flex-col mt-2">
-                        <a id="none" value-cart-id="${value_id}" class="hover:cursor-pointer text-right font-bold mr-4" onclick="delete_item(this)">Remove</a>
-                        <h1 class="mt-1">Item Name</h1>
-                        <div class="mt-5">
-                            <button class="bg-slate-950 w-8 h-8 text-white rounded-md">-</button>
-                                <input name='quantity-input' class="w-24 border-2 h-8 rounded-md text-center" value="1" type="number autocomplete='off'">
-                            <button class="bg-slate-950 w-8 h-8 text-white rounded-md">+</button>
+                        <a id="none" value-cart-id="${id}" class="hover:cursor-pointer text-right font-bold mr-4" onclick="delete_item(this)">Remove</a>
+                        <h1 class="mt-1">${name}</h1>
+                        <div class="mt-1 mb-1">
+                                <p id="price-id-${id}" value-current-price="${price}">${price}</p>
+                            <button class="bg-slate-950 w-8 h-8 text-white rounded-md" value-id="${id}" onclick="decrease_quantity(this)">-</button>
+                                <input value-quantity="${quantity}" id="input-${id}" name='quantity-input' value-id="${id}" class="w-24 border-2 h-8 rounded-md text-center" value="1" type="number" autocomplete='off' onblur="quantity_textBox(event, this)">
+                            <button class="bg-slate-950 w-8 h-8 text-white rounded-md" value-id="${id}" onclick="increase_quantity(this)">+</button>
                         </div>
                     </div>
                 </div>
             `
 
             request.onload = ()=> {
+                data = JSON.parse(request.responseText)
+                if ( data['message'] == 'Please Login'){
+                    window.location.href = 'http://127.0.0.1:8000/signin/'
+                }
                 if (request.status == 201){
                     document.querySelector('#cart-items').appendChild(new_card)
                     counter.textContent = parseInt(counter.textContent) + 1
+                    mobile_counter.textContent = counter.textContent
                     counter.classList.add()
                 }
             }
@@ -258,10 +406,9 @@
         }
 
 
-
         async function delete_item(_this){
             const request = new XMLHttpRequest
-            await request.open('POST', 'http://127.0.0.1:8000/api/cart/delete-item')
+            await request.open('POST', 'http://127.0.0.1:8000/api/cart/delete-item/')
             request.setRequestHeader('Content-Type', 'application/json')
             cart_id = _this.getAttribute('id')
             let remove_new_cart_div = 'no'
@@ -276,6 +423,7 @@
             
             if (cart_id){
                 counter.textContent = parseInt(counter.textContent) - 1
+                mobile_counter.textContent = counter.textContent
                 document.querySelector(`.cart-${cart_id}`).remove()
                 document.querySelector(`.hr-${cart_id}`).remove()
                 if (remove_new_cart_div == 'yes'){

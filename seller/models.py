@@ -19,6 +19,7 @@ class Cart(models.Model):
     user_info = models.ForeignKey(User, on_delete=models.CASCADE, default=None)
     item_info = models.ForeignKey(Item, on_delete=models.CASCADE)
     cart_item_quantity = models.IntegerField(default=1)
+    cart_item_total_price = models.IntegerField(default=0)
     cart_is_checkedout = models.BooleanField(default=False)
 
 
