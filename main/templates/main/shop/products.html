@@ -82,17 +82,16 @@
             <div id="categories" class=" border-2 rounded-tr-xl text text-right pt-1 pr-8 font-bold  mt-7 w-60 h-a hidden md:block bg-white">
                 <h1 class="text-center mt-1">Categories</h1>
                 {% for type in types %}
-                    <h1 class="mt-2"><a class="hover:cursor-pointer" value-type="{{type}}">{{type}}</a></h1>     
+                    <h1 class="mt-2"><a class="hover:cursor-pointer" value-type="{{type}}" onclick="category_button(this)">{{type}}</a></h1>     
                 {% endfor %}
             </div>
 
-            <div id="product-col" class="md:flex md:flex-col">
+            <div id="product-col" class="md:flex container max-w-full flex-wrap">
                 {% for item_list in items %}
                     <!--Card Container-->
-                    <div id="items-container" value="{{forloop.counter}}" class=" mt-2 md:flex md:flex-1">
                         {% for item in item_list %}
                             <!--card-->
-                            <div id="card" class="container max-w-full md:max-w-80 mt-5">
+                            <div id="card" class="container max-w-full md:max-w-80 mt-5 card-product" value-card="{{item.item_type}}">
                                 <div id="image" value-type="{{item.item_type}}" class="flex flex-col items-center md:py-4 rounded-t-2xl border-2 mx-7 bg-white shadow-sm">
                                     <div id="size" class="w-6/12 md:w-7/12">
                                         <img src="{{ item.item_image.url }}" alt="jacket">
@@ -108,7 +107,6 @@
                                 </div>
                             </div>
                         {% endfor %}
-                    </div>
                 {% endfor %}
             </div>
             
@@ -181,6 +179,27 @@
     </div>
 
     <script>
+        //Category Filter
+        let selected = ''
+        function category_button(this_){
+            const cards = document.querySelectorAll('.card-product')
+
+            cards.forEach(card => {
+                if (String(card.getAttribute('value-card')).toLowerCase() != String(this_.getAttribute('value-type')).toLowerCase() && selected != String(this_.getAttribute('value-type')).toLowerCase()){
+                    card.style.display = 'none'
+                }else{
+                    card.style.display = 'block'
+                }
+            })
+
+            if (selected != ''){
+                selected = ''
+            }else{
+                selected = String(this_.getAttribute('value-type')).toLowerCase()
+            }
+        }
+
+
         // PLACE ORDER
         const place_order_button = document.querySelector('#place-order-button')
         place_order_button.addEventListener('click', () => {
@@ -232,7 +251,7 @@
             const quantity = this_.getAttribute('value-quantity')
             const price = h1_price.getAttribute('value-price')
 
-            if (parseInt(this_.value) >= parseInt(quantity)){
+            if (parseInt(this_.value) >= parseInt(quantity) || parseInt(this_.value) <= 0){
                 this_.value = parseInt(quantity)
             }
 
@@ -295,7 +314,7 @@
             const p_price = document.querySelector(`#price-id-${id}`)
             const current_price = p_price.getAttribute('value-current-price')
 
-            if (parseInt(max_quantity) <= parseInt(this_.value)){
+            if (parseInt(max_quantity) <= parseInt(this_.value) || parseInt(this_.value) <= 0){
                 this_.value = max_quantity
             }
 
