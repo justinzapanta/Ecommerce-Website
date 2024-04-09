@@ -7,7 +7,7 @@ from dotenv import dotenv_values
 import json
 import stripe
 
-stripe.api_key = dotenv_values('.env')['stripe_api_key']
+stripe.api_key = dotenv_values('.env')['STRIPE_API_KEY']
 
 @csrf_exempt
 def add_item(request):
@@ -66,7 +66,7 @@ def update_quantity(request):
         if 'new_item' in data:
             item = Item.objects.get(item_id=id_)
             user = User.objects.get(username=request.session['user_email'])
-            cart = Cart.objects.get(item_info=item, user_info=user)
+            cart = Cart.objects.get(item_info=item, user_info=user, cart_is_checkedout=False)
             item_price = item.item_price
             
             if cart.cart_item_quantity != int(new_quantity):
@@ -74,7 +74,7 @@ def update_quantity(request):
                 cart.cart_item_total_price = item_price * int(new_quantity)
                 cart.save()
         else:
-            cart = Cart.objects.get(cart_id=id_)
+            cart = Cart.objects.get(cart_id=id_, cart_is_checkedout=False)
             price = cart.item_info.item_price
 
             cart.cart_item_quantity = int(new_quantity)
@@ -94,7 +94,7 @@ def place_order(request):
         for item in cart:
             items.append({
                 'price' : item.item_info.stripe_id,
-                'quantity' : item.cart_item_quantity 
+                'quantity' : int(item.cart_item_quantity)
             })
 
         link = stripe.PaymentLink.create(

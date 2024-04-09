@@ -17,14 +17,16 @@ def new_transaction(request):
     if 'user_email' in request.session:
         user = User.objects.get(username=request.session['user_email'])
         transaction = Transaction.objects.filter()
-        cart = Cart.objects.filter(user_info=user)
+        cart = Cart.objects.filter(user_info=user, cart_is_checkedout=False)
 
         number = 1
         price = total_price(cart)
 
-        if transaction:
-            number = transaction[-1].transaction_invoice
-
+        if len(transaction) >= 1:
+            number = len(transaction) + 1
+        else:
+            number = 1
+            
         for item in cart:
             item.cart_is_checkedout = True
             transaction = Transaction(
