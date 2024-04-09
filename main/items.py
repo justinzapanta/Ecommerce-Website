@@ -3,11 +3,11 @@ from seller.models import Item, Cart
 
 class Items():
     def __init__(self):
-        self.items = Item.objects.all()
+        self.items = Item.objects.filter(item_quantity__gt=0)
     
     def get_type(self, search=''):
         type_list = []
-        items = Item.objects.filter(item_name__icontains=search)
+        items = Item.objects.filter(item_name__icontains=search, item_quantity__gt=0)
 
         for item in items:
             if item.item_type.title() not in type_list:
@@ -16,7 +16,7 @@ class Items():
         return type_list
 
     def search(self, search):
-        return Item.objects.filter(item_name__icontains=search)
+        return Item.objects.filter(item_name__icontains=search, item_quantity__gt=0)
     
 
     def for_column(self, items):

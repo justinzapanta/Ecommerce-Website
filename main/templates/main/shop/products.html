@@ -416,7 +416,7 @@
                         <a id="none" value-cart-id="${id}" class="hover:cursor-pointer text-right font-bold mr-4" onclick="delete_item(this)">Remove</a>
                         <h1 class="mt-1">${name}</h1>
                         <div class="mt-1 mb-1">
-                                <p id="price-id-${id}" value-current-price="${price}">${price}</p>
+                                <p id="price-id-${id}" value-current-price="${price}">Price: ${price}</p>
                             <button class="bg-slate-950 w-8 h-8 text-white rounded-md" value-id="${id}" onclick="decrease_quantity(this)">-</button>
                                 <input value-quantity="${quantity}" id="input-${id}" name='quantity-input' value-id="${id}" class="w-24 border-2 h-8 rounded-md text-center" value="1" type="number" autocomplete='off' onblur="quantity_textBox(event, this)">
                             <button class="bg-slate-950 w-8 h-8 text-white rounded-md" value-id="${id}" onclick="increase_quantity(this)">+</button>

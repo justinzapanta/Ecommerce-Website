@@ -11,7 +11,16 @@ def total_price(cart):
         price = price + item.cart_item_total_price
 
     return price    
-    
+
+
+def decrease_item_quantity(cart):
+    items = Item.objects.all()
+    for cart_item in cart:
+        for item in items:
+            if cart_item.item_info.item_id == item.item_id:
+                item.item_quantity = item.item_quantity - cart_item.cart_item_quantity
+                item.save()
+
 
 def new_transaction(request):
     if 'user_email' in request.session:
@@ -35,6 +44,7 @@ def new_transaction(request):
                 transaction_total_price=price)
             item.save()
             transaction.save()
+        decrease_item_quantity(cart)
 
         return redirect('shop')
     return redirect('sign_in')
