@@ -100,7 +100,7 @@
                                 </div>
                                 <div class="flex rounded-b-2xl border-2 p-2 mx-7 bg-white shadow-sm">
                                     <div class="flex-1 flex flex-col md:text-md">
-                                        <h1 class="text-center font-bold">Name: {{ item.item_name }}</h1>
+                                        <h1 class="text-center font-bold">{{ item.item_name }}</h1>
                                         <p class="mb-2">Price: {{ item.item_price }}</p>
                                         <p id="quantity-{{item.item_id}}" value-quantity="{{item.item_quantity}}" >Quantity: {{ item.item_quantity }}</p>
                                         <p class="text-center mt-3 mb-3"><button value-quantity="{{item.item_quantity}}" value-price="{{item.item_price}}"  value-name="{{item.item_name}}" value-id="{{item.item_id}}" value-image="{{ item.item_image.url }}" id="add-to-cart-button" class="bg-slate-950 w-32 h-10 rounded-full text-white" onclick="add_item(this)">Add To Cart</button></p>
@@ -152,7 +152,7 @@
                     </div>
                 {% endfor %}
 
-                <button class="rounded-md right-20 h-12 w-52 absolute bottom-10 bg-slate-950 text-white">Place Order</button>
+                <button id="place-order-button" class="rounded-md right-20 h-12 w-52 absolute bottom-10 bg-slate-950 text-white">Place Order</button>
            </div>
            <h1 class="text-xl text-center mt-7 font-bold">Total: </h1>
     </div>
@@ -181,6 +181,23 @@
     </div>
 
     <script>
+        // PLACE ORDER
+        const place_order_button = document.querySelector('#place-order-button')
+        place_order_button.addEventListener('click', () => {
+            const request = new XMLHttpRequest
+            request.open('POST', '/api/cart/place-order/')
+            request.setRequestHeader('Content-Type', 'application/json')
+            request.send()
+
+            request.onloadend = () => {
+                if (request.status == 200){
+                    window.location.href = JSON.parse(request.responseText)['url']
+                }
+            }
+        })
+
+
+
         // Quantity
 
         function request_quantity(link, dict){
@@ -199,7 +216,7 @@
             
             if (parseInt(input.value) != parseInt(quantity)){
                 input.value = parseInt(input.value) + 1
-                h1_price.textContent = price * parseInt(input.value)
+                h1_price.textContent = "Price: " + (price * parseInt(input.value))
             }
 
             request_quantity(
@@ -219,7 +236,7 @@
                 this_.value = parseInt(quantity)
             }
 
-            h1_price.textContent = price * parseInt(this_.value)
+            h1_price.textContent = "Price: " + (price * parseInt(this_.value))
             request_quantity(
                 'http://127.0.0.1:8000/api/cart/update-quantity/',
                 {id : id, new_quantity : this_.value }
@@ -236,7 +253,7 @@
             
             if (parseInt(input.value) >= 2){
                 input.value = parseInt(input.value) - 1
-                h1_price.textContent = price * parseInt(input.value)
+                h1_price.textContent = "Price: " + (price * parseInt(input.value))
             }
 
             request_quantity(
@@ -260,7 +277,7 @@
 
             if (parseInt(quantity_textBox.value) != parseInt(item_quantity.getAttribute('value-quantity'))){
                 quantity_textBox.value = parseInt(quantity_textBox.value) + 1
-                price.textContent =  parseInt(quantity_textBox.value) * parseInt(current_price)
+                price.textContent = "Price: " + (parseInt(quantity_textBox.value) * parseInt(current_price))
             }
 
             request_quantity(
@@ -282,7 +299,7 @@
                 this_.value = max_quantity
             }
 
-            p_price.textContent = parseInt(current_price) * parseInt(this_.value)
+            p_price.textContent = "Price: " + (parseInt(current_price) * parseInt(this_.value))
 
             request_quantity(
                 'http://127.0.0.1:8000/api/cart/update-quantity/',
@@ -302,7 +319,7 @@
 
             if (parseInt(quantity_textBox.value) >= 2){
                 quantity_textBox.value = parseInt(quantity_textBox.value) - 1
-                price.textContent = parseInt(current_price) * parseInt(quantity_textBox.value)
+                price.textContent = "Price: " + (parseInt(current_price) * parseInt(quantity_textBox.value))
             }
 
             request_quantity(

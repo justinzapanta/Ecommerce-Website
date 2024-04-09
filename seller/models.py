@@ -1,9 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.utils import timezone
 # Create your models here.
 class Item(models.Model):
     item_id = models.AutoField(primary_key=True)
+    stripe_id = models.CharField(max_length=200)
     item_image = models.ImageField(upload_to='./main/static/img/products', default=None)
     item_name = models.CharField(max_length=200)
     item_type = models.CharField(max_length=100, default=None)

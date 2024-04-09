@@ -3,8 +3,11 @@ from django.views.decorators.csrf import csrf_exempt
 from seller.models import Cart, Item
 from django.contrib.auth.models import User
 from django.shortcuts import redirect
+from dotenv import dotenv_values
 import json
+import stripe
 
+stripe.api_key = dotenv_values('.env')['stripe_api_key']
 
 @csrf_exempt
 def add_item(request):
@@ -75,3 +78,25 @@ def update_quantity(request):
             cart.save()
         return JsonResponse({'message' : 'Success'}, status=201)
     return JsonResponse({'message' : 'Error'}, status=203)
+
+
+@csrf_exempt
+def place_order(request):
+    if 'user_email' in request.session:
+        user = User.objects.get(username=request.session['user_email'])
+        cart = Cart.objects.filter(user_info=user)
+        
+        items = []
+        for item in cart:
+            items.append({
+                'price' : item.item_info.stripe_id,
+                'quantity' : item.cart_item_quantity 
+            })
+
+        link = stripe.PaymentLink.create(
+            line_items=items,
+            after_completion={"type": "redirect", "redirect": {"url": "http://127.0.0.1:8000/shop/"}},
+        )
+
+        return JsonResponse({'url' : link.get('url')}, status=200)
+    return JsonResponse({'message' : 'Login'}, status=400)

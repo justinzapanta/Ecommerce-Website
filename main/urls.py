@@ -10,8 +10,11 @@ urlpatterns = [
     path('signin/', include('user_authentication.urls')),
     path('seller/', include('seller.urls')),
 
-    #End Point
+    #Cart End Point
     path('api/cart/add-item/', cart_endpoint.add_item),
     path('api/cart/delete-item/', cart_endpoint.delete_item),
     path('api/cart/update-quantity/', cart_endpoint.update_quantity),
+    path('api/cart/place-order/', cart_endpoint.place_order),
+
+    #Transaction End Point
 ] + static( settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
