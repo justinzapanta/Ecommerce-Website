@@ -25,6 +25,8 @@ class Cart(models.Model):
 
 class Transaction(models.Model):
     transaction_id = models.AutoField(primary_key=True)
+    transaction_invoice = models.IntegerField()
     cart_info = models.ForeignKey(Cart, on_delete=models.CASCADE)
     transaction_total_price = models.IntegerField()
     transaction_date = models.DateTimeField(auto_now_add=True)
+    

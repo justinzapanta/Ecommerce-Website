@@ -26,7 +26,7 @@ def shop(request):
     if 'user_email' in request.session:
         data['login'] = True
         email = request.session['user_email']
-        data['cart_items'] = Cart.objects.filter(user_info=User.objects.get(username=email))
+        data['cart_items'] = Cart.objects.filter(user_info=User.objects.get(username=email), cart_is_checkedout=False)
         data['item_count'] = len(data['cart_items'])
 
 

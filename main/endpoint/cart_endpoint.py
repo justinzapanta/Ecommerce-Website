@@ -15,12 +15,15 @@ def add_item(request):
         if request.method == 'POST':
             data = json.loads(request.body)
             item = Item.objects.get(item_id=data.get('id'))
-            cart = Cart.objects.filter(item_info=item)
             user = User.objects.get(username=request.session['user_email'])
+            cart = Cart.objects.filter(item_info=item, user_info=user, cart_is_checkedout=False)
 
-
-            if not Cart.objects.filter(item_info=item, user_info=user):
-                cart = Cart(item_info=item, user_info=user, cart_item_total_price=item.item_price)
+            if not cart:
+                cart = Cart(
+                    item_info=item,
+                    user_info=user,
+                    cart_item_total_price=item.item_price
+                )
                 cart.save()
                 return JsonResponse({'message' : 'success'}, status=201)
             else:
@@ -35,14 +38,15 @@ def delete_item(request):
         if request.method == 'POST':
             data = json.loads(request.body)
             user = User.objects.get(username=request.session['user_email'])
+
             if not 'item_id' in data:
                 print('run')
-                cart = Cart.objects.get(cart_id=data.get('cart_id'), user_info=user)
+                cart = Cart.objects.get(cart_id=data.get('cart_id'), user_info=user, cart_is_checkedout=False)
                 cart.delete()
 
             else:
                 item = Item.objects.get(item_id=data.get('item_id'))
-                cart = Cart.objects.get(item_info=item, user_info=user)
+                cart = Cart.objects.get(item_info=item, user_info=user, cart_is_checkedout=False)
                 cart.delete()
 
             return JsonResponse({'message' : 'Deleted'}, status=201)
@@ -84,7 +88,7 @@ def update_quantity(request):
 def place_order(request):
     if 'user_email' in request.session:
         user = User.objects.get(username=request.session['user_email'])
-        cart = Cart.objects.filter(user_info=user)
+        cart = Cart.objects.filter(user_info=user, cart_is_checkedout=False)
         
         items = []
         for item in cart:
@@ -95,7 +99,7 @@ def place_order(request):
 
         link = stripe.PaymentLink.create(
             line_items=items,
-            after_completion={"type": "redirect", "redirect": {"url": "http://127.0.0.1:8000/shop/"}},
+            after_completion={"type": "redirect", "redirect": {"url": "http://127.0.0.1:8000/api/transaction/new-transaction/"}},
         )
 
         return JsonResponse({'url' : link.get('url')}, status=200)

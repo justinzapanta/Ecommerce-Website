@@ -2,7 +2,7 @@ from django.urls import path, include
 from . import views
 from django.conf.urls.static import static
 from django.conf import settings
-from .endpoint import cart_endpoint
+from .endpoint import cart_endpoint, transaction_endpoint
 
 urlpatterns = [
     path('', views.index, name='index'),
@@ -17,4 +17,5 @@ urlpatterns = [
     path('api/cart/place-order/', cart_endpoint.place_order),
 
     #Transaction End Point
+    path('api/transaction/new-transaction/', transaction_endpoint.new_transaction, name='new transaction')
 ] + static( settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
