@@ -1,0 +1,221 @@
+{% extends 'main/shop/products.html' %}
+{% load static %}
+
+{% block add-style-link %}
+    <link rel="stylesheet" href="{% static 'css/profile.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+{% endblock %}
+
+{% block red %}
+{% endblock %}
+
+{% block nav-link %}
+    <ul class="flex justify-center md:justify-normal mt-2 font-bold text-lg">
+        <li><a href="{% url 'shop' %}">Shop</a></li>
+        <li class="ml-8"><a href="{% url 'sign_out' %}">Sign Out</a></li>
+    </ul>
+{% endblock %}
+
+{% block mobile %}
+    <li><a href="{% url 'shop' %}">Shop</a></li>
+    <li class="mt-4"><a href="{% url 'sign_out' %}">Logout</a></li>
+{% endblock %}
+
+{% block profileHeader %}
+        <!--HEADER FOR MOBILE VIEW-->
+        <form method="POST" class="container max-w-full sticky top-0">
+        <header class="flex container border-b-2 rounded-b-md pb-1 shadow-sm sticky pt-1 top-0 max-w-full md:justify-between bg-gray-50 text-black mt-2 md:hidden">
+            <a id="menu" class="flex-1 hover:cursor-pointer ml-1 mt-1 "><i class="fas fa-regular fa-bars fa-2x"></i></a>
+            <h1 class="text-2xl font-bold mr-5">Profile</h1>
+        </header>
+        </form>
+{% endblock %}
+
+
+
+
+
+
+{% block content %}
+    <div class="container max-w-full mt-16 md:flex">
+        <div class="md:border-black md:border-r-2 md:mr-10  md:px-10 md:container md:max-w-72" >
+            <div class="items-center flex flex-col md:flex-row ">
+                <div class="">
+                    <img class="w-36 h-36 items-center rounded-full bg-gray-900" src="{% static 'img/profile.jpg' %}" alt="">
+                    <h1 id="full_name" class="text-2xl mt-4 font-bold">{{user.first_name}} {{user.last_name}}</h1>
+                </div>
+            </div>
+            <div class="md:block hidden md:mt-10 font-bold text-xl mb-20" >
+                <ul>
+                    <li><a class="hover:cursor-pointer" onclick="personal(this)">Personal Info</a></li>
+                    <li class="mt-4"><a class="hover:cursor-pointer" onclick="transaction(this)">Transaction</a></li>
+                </ul>
+            </div>
+        </div>
+        <hr class="border-2 mt-10 md:hidden">
+        <div class="md:mt-10 md:hidden" id="personal-info">
+            <div class="">
+                <h1 id="notif" class="text-red-500 hidden">Email Address most have @gmail.com</h1>
+                <h1 class="text-start font-bold text-xl md:text-2xl">Personal Info</h1>
+                <form method="POST" class="pt-5 flex flex-col items-center md:mt-3 md:ml-10">
+                    {% csrf_token %}
+                    <div>
+                        <label class="text-md font-bold mr-10" for="full-name">Email:</label>
+                        <input id="email" class="w-64 h-8 border border-black pl-1" name="full-name" type="text" value-current-email="{{user.username}}" value="{{user.username}}" disabled>
+                    </div>
+                    <div class="mt-3">
+                        <label class="text-md font-bold" for="full-name">First Name:</label>
+                        <input id="first_name" class="w-64 h-8 border border-black pl-1" name="full-name" type="text" value="{{user.first_name}}" disabled>
+                    </div>
+                    <div class="mt-3">
+                        <label class="text-md font-bold" for="full-name">Last Name:</label>
+                        <input id="last_name" class="w-64 h-8 border pl-1 border-black" name="full-name" type="text" value="{{user.last_name}}" disabled>
+                    </div>
+                    <div class="flex mt-3">
+                        <button id="editt_button" type="button" class="mr-10 w-24 text-white h-8 bg-slate-950" onclick="edit_buttonn(this)">Edit</button>
+                        <button id="save-button" class="w-28 h-8 bg-green-500 hidden" type="button">Save</button>
+                    </div>
+                </form>
+            </div>
+            <div class="mt-8 md:mt-10">
+                <h1 class="text-start font-bold text-xl md:text-2xl">Security</h1>
+                <button type="button" class="w-72 h-10 mt-4 md:ml-14 ml-6 bg-slate-950 text-white font-bold">Change Password</button>
+            </div>
+        </div>
+
+
+        <!--Transaction-->
+        <div id="Transaction" class="md:mt-10 hidden md:block container">
+            <h1 class="text-2xl font-bold">Transaction</h1>
+            <div id="card-transaction">
+                <table>
+                    <tr class="border border-black">
+                        <th class="px-10 border border-black">Transaction No.</th>
+                        <th class="px-10 border border-black">Status</th>
+                        <th class="px-10 border border-black">Total Price</th>
+                        <th class="px-10 border border-black">Items</th>
+                    </tr>
+                    <tr class="border border-black">
+                        <td class="border px-4 border-black">3</td>
+                        <td class="border px-4 border-black">Processing</td>
+                        <td class="border px-4 border-black">100</td>
+                        <td class="border px-4 text-center border-black"><button class="bg-slate-950 text-white w-full font-bold">View</button></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+<script>
+
+    const transaction_info = document.querySelector('#Transaction')
+    const personal_info = document.querySelector('#personal-info')
+
+    function transaction(this_){
+        transaction_info.style.display = 'block'
+        personal_info.style.display = 'none'
+    }
+
+    function personal(this_){
+        transaction_info.style.display = 'none'
+        personal_info.style.display = 'block'
+    }
+
+
+
+    const first = document.querySelector('#first_name')
+    const last = document.querySelector('#last_name')
+    const full_name = document.querySelector('#full_name')
+    const email = document.querySelector('#email')
+    const save_button = document.querySelector('#save-button')
+    const editt_button = document.querySelector('#editt_button')
+    const notif = document.querySelector('#notif')
+
+    let currrent_email = email.getAttribute('value-current-email')
+
+    save_button.addEventListener('click', () => {
+        if (currrent_email == email.value){
+            full_name.textContent = first.value + ' ' + last.value
+
+            first.disabled = true
+            last.disabled = true
+            email.disabled = true
+            save_button.style.display = 'none'
+            editt_button.textContent = 'Edit'
+
+            const request = new XMLHttpRequest
+            request.open('POST', 'http://127.0.0.1:8000/api/profile/update')
+            request.setRequestHeader('Content-Type', 'application/json')
+
+            request.send(JSON.stringify({
+                'first_name' : first.value,
+                'last_name' : last.value,
+                'email' : currrent_email,
+            }))
+        }else{
+            if (String(email.value).includes('@gmail.com')){
+                full_name.textContent = first.value + ' ' + last.value
+                first.disabled = true
+                last.disabled = true
+                email.disabled = true
+                save_button.style.display = 'none'
+                editt_button.textContent = 'Edit'
+
+                const request = new XMLHttpRequest
+                request.open('POST', 'http://127.0.0.1:8000/api/profile/update')
+                request.setRequestHeader('Content-Type', 'application/json')
+
+                request.send(JSON.stringify({
+                    'first_name' : first.value,
+                    'last_name' : last.value,
+                    'email' : String(email.value),
+                }))
+                notif.style.display = 'none'
+            }else{
+                notif.style.display = 'block'
+            }
+        }
+    })
+
+    function edit_buttonn(this_){
+        if (first.disabled){
+                first.disabled = false
+                last.disabled = false
+                email.disabled = false
+                save_button.style.display = 'block'
+                this_.textContent = 'Close'
+
+        }else{
+                first.disabled = true
+                last.disabled = true
+                email.disabled = true
+                save_button.style.display = 'none'
+                this_.textContent = 'Edit'
+        }
+    }
+
+
+    const menu = document.querySelector('#menu')
+    const menu_content = document.querySelector('#menu-content')
+    const close_menu = document.querySelector('#close-menu')
+
+    function display(element, value){
+        element.style.display = value
+    }
+
+    menu.addEventListener('click', () => {
+        display(menu_content, 'block')
+    })
+
+    close_menu.addEventListener('click', () => {
+        display(menu_content, 'none')
+    })
+
+</script>
+{% endblock %}
+

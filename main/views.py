@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .items import Items
 from seller.models import Cart
 from django.contrib.auth.models import User
@@ -45,3 +45,11 @@ def shop(request):
     items = items.for_column(data['items'])
     data['items'] = items
     return render(request, 'main/shop/products.html', data)
+
+
+def profile(request):
+    if 'user_email' in request.session:
+        user = User.objects.get(username=request.session['user_email']) 
+
+        return render(request, 'main/profile/profile.html', {'user' : user})
+    return redirect('sign_in')
