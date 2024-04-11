@@ -17,7 +17,7 @@
 {% endblock %}
 
 {% block mobile %}
-    <li><a href="{% url 'shop' %}">Shop</a></li>
+    <li class="mt-14"><a href="{% url 'shop' %}">Shop</a></li>
     <li class="mt-4"><a href="{% url 'sign_out' %}">Logout</a></li>
 {% endblock %}
 
@@ -55,7 +55,7 @@
         <hr class="border-2 mt-10 md:hidden">
         <div class="md:mt-14 md:block" id="personal-info">
             <div class="">
-                <h1 id="notif" class="text-red-500 hidden">Email Address most have @gmail.com</h1>
+                <h1 id="notif" class="text-red-500 hidden">Email Address must have @gmail.com</h1>
                 <h1 class="text-start font-bold text-xl md:text-2xl">Personal Info</h1>
                 <form method="POST" class="pt-5 flex flex-col items-center md:mt-3 md:ml-3">
                     {% csrf_token %}
@@ -75,10 +75,33 @@
                         <button id="editt_button" type="button" class="mr-10 w-24 text-white h-8 bg-slate-950" onclick="edit_buttonn(this)">Edit</button>
                         <button id="save-button" class="w-28 h-8 bg-green-500 hidden" type="button">Save</button>
                     </div>
-                    <button class="bg-slate-950 font-bold mt-7 text-white w-56 h-9">Change Passowrd</button>
+                    <button type="button" class="bg-slate-950 font-bold mt-7 text-white w-56 h-9" onclick="show_changePassword()">Change Passowrd</button>
                 </form>
             </div>
         </div>
+
+
+        <!--Change Password-->
+        <div id="change-password" class="container absolute content-center top-0 max-w-full h-screen hidden" style="background-color: rgba(0, 0, 0, 0.322);">
+            <div class="w-10/12 md:w-2/6 pt-5 bg-white h-96 ml-7 md:ml-96 rounded-xl relative">
+                <a onclick="close_changePassword()" class="absolute right-0 text-xl mr-5 font-bold hover:cursor-pointer">X</a>
+                <h1 class="text-center font-bold">Change Password</h1>
+                <form method="POST" class="flex flex-col md:item items-center mt-5">
+                    {% csrf_token %}
+                        <label class="mt-3" for="current-password">Password</label>
+                        <input required class="border border-black rounded-lg pl-1 md:w-72 md:h-8" type="password" id="current-password" name="password">
+                        <label class="mt-3" for="new-password md">Current Password</label>
+                        <input required class="border border-black rounded-lg pl-1 md:w-72 md:h-8" type="password" id="new-password" name="new-password">
+                        <label class="mt-3" for="confirm-password">Confirm New Password</label>
+                        <input required class="border border-black rounded-lg pl-1 md:w-72 md:h-8" type="password" id="confirm-password" name="confirm-password">
+
+                        <button id="button-change-password" class="mt-6 bg-slate-950 text-white w-44 h-9 rounded-md " type="submit">Change Password</button>
+                        <h1 id="notif-change-pass" class="text-red-500 text-sm  mt-2">{{notif}}</h1>
+                        
+                </form>
+            </div>
+        </div>
+
 
 
         <!--Transaction-->
@@ -108,8 +131,33 @@
 
 
 <script>
-    const itemm = document.querySelectorAll('.itemm')
+    const change_password = document.querySelector('#change-password')
 
+    change_password.addEventListener('submit', (event) => {
+        const new_password = document.querySelector('#new-password')
+        const confirm_password = document.querySelector('#confirm-password')
+
+        event.preventDefault()
+        if (new_password.value == confirm_password.value){
+            event.target.submit()
+        }else{
+            document.querySelector('#notif-change-pass').textContent = 'New Password and Confirm Password must match'
+        }
+    })
+
+
+    function show_changePassword(){
+        change_password.style.display = 'block'
+    }
+
+    function close_changePassword(){
+        change_password.style.display = 'none'
+    }
+
+
+
+
+    const itemm = document.querySelectorAll('.itemm')
     function view_button(this_){
         const request = new XMLHttpRequest
         request.open('POST', 'http://127.0.0.1:8000/api/transaction/get-item')

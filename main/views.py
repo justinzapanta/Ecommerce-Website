@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from .items import Items
 from seller.models import Cart, Transaction
 from django.contrib.auth.models import User
+from django.contrib.auth import authenticate
 import json
 # Create your views here.
 
@@ -69,11 +70,20 @@ def profile(request):
 
             reference = transaction.transaction_invoice
         
+        notif = ''
+        if request.method == 'POST':
+            if 'password' in request.POST:
+                check_pass = authenticate(username=user.username, password=request.POST.get('password'))
+                if check_pass:
+                    user.set_password(request.POST.get('new-password'))
+                    user.save()
+                else:
+                    notif = 'Invalid Password'
 
         return render(request, 'main/profile/profile.html', {
             'user' : user,
             'transactions' : filter_transaction,
             'item_group' : item_group,
-
+            'notif' : notif,
         })
     return redirect('sign_in')
