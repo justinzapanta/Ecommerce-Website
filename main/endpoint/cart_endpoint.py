@@ -89,18 +89,19 @@ def place_order(request):
     if 'user_email' in request.session:
         user = User.objects.get(username=request.session['user_email'])
         cart = Cart.objects.filter(user_info=user, cart_is_checkedout=False)
-        
-        items = []
-        for item in cart:
-            items.append({
-                'price' : item.item_info.stripe_id,
-                'quantity' : int(item.cart_item_quantity)
-            })
 
-        link = stripe.PaymentLink.create(
-            line_items=items,
-            after_completion={"type": "redirect", "redirect": {"url": "http://127.0.0.1:8000/api/transaction/new-transaction/"}},
-        )
+        if cart:
+            items = []
+            for item in cart:
+                items.append({
+                    'price' : item.item_info.stripe_id,
+                    'quantity' : int(item.cart_item_quantity)
+                })
 
-        return JsonResponse({'url' : link.get('url')}, status=200)
+            link = stripe.PaymentLink.create(
+                line_items=items,
+                after_completion={"type": "redirect", "redirect": {"url": "http://127.0.0.1:8000/api/transaction/new-transaction/"}},
+            )
+            return JsonResponse({'url' : link.get('url')}, status=200)
+        return JsonResponse({'message' : 'Please add item'}, status=404)
     return JsonResponse({'message' : 'Login'}, status=400)

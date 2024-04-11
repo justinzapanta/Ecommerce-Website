@@ -53,28 +53,29 @@
             </div>
         </div>
         <hr class="border-2 mt-10 md:hidden">
-        <div class="md:mt-10 md:block" id="personal-info">
+        <div class="md:mt-14 md:block" id="personal-info">
             <div class="">
                 <h1 id="notif" class="text-red-500 hidden">Email Address most have @gmail.com</h1>
                 <h1 class="text-start font-bold text-xl md:text-2xl">Personal Info</h1>
-                <form method="POST" class="pt-5 flex flex-col items-center md:mt-3 md:ml-10">
+                <form method="POST" class="pt-5 flex flex-col items-center md:mt-3 md:ml-3">
                     {% csrf_token %}
                     <div>
                         <label class="text-md font-bold mr-10" for="full-name">Email:</label>
-                        <input id="email" class="w-64 h-8 border border-black pl-1" name="full-name" type="text" value-current-email="{{user.username}}" value="{{user.username}}" disabled>
+                        <input id="email" class="md:w-96 w-60 h-8 border border-black pl-1" name="full-name" type="text" value-current-email="{{user.username}}" value="{{user.username}}" disabled>
                     </div>
                     <div class="mt-3">
                         <label class="text-md font-bold" for="full-name">First Name:</label>
-                        <input id="first_name" class="w-64 h-8 border border-black pl-1" name="full-name" type="text" value="{{user.first_name}}" disabled>
+                        <input id="first_name" class="md:w-96 w-60 h-8 border border-black pl-1" name="full-name" type="text" value="{{user.first_name}}" disabled>
                     </div>
                     <div class="mt-3">
                         <label class="text-md font-bold" for="full-name">Last Name:</label>
-                        <input id="last_name" class="w-64 h-8 border pl-1 border-black" name="full-name" type="text" value="{{user.last_name}}" disabled>
+                        <input id="last_name" class="md:w-96 w-60 h-8 border pl-1 border-black" name="full-name" type="text" value="{{user.last_name}}" disabled>
                     </div>
-                    <div class="flex mt-3">
+                    <div class="flex mt-5">
                         <button id="editt_button" type="button" class="mr-10 w-24 text-white h-8 bg-slate-950" onclick="edit_buttonn(this)">Edit</button>
                         <button id="save-button" class="w-28 h-8 bg-green-500 hidden" type="button">Save</button>
                     </div>
+                    <button class="bg-slate-950 font-bold mt-7 text-white w-56 h-9">Change Passowrd</button>
                 </form>
             </div>
         </div>
@@ -124,12 +125,15 @@
 
                     item_elemets = item_elemets + `
                         <div class='mt-2'>
-                            <div class="mt-5 ml-5 flex" id="card-item">
-                                <img class="w-32" src="${item[0]}" alt="">
+                            <div class="mt-5 ml-5 flex mb-5" id="card-item">
+                                <img class="w-24" src="${item[0]}" alt="">
                                 <div class="text-xl">
                                     <h1>Item Name: ${item[1]}</h1>
                                     <h1 class="mt-4 mb-5">Quantity: ${item[2]}</h1>
-                                    <h1>Total Price: ${item[3]}</h1>
+                                    <div class="flex">
+                                        <h1 class="mr-10">Price: ${item[3] / item[2] }</h1>
+                                        <h1>Total Price: ${item[3]}</h1>
+                                    </div>
                                 </div>
                             </div>
                             <hr class="border-2">
@@ -144,7 +148,7 @@
                 new_div.innerHTML = `
                         <div class="w-6/12 h-5/6 bg-white relative mt-16 ml-72 overflow-y-auto rounded-xl itemm">
                             <a class="absolute right-0 text-2xl mr-6 mt-3 hover:cursor-pointer font-bold" onclick="close_modal()">X</a>
-                            <h1 class="text-2xl mt-10 ml-4 font-bold">Item/s</h1>
+                            <h1 class="text-2xl mt-10 ml-4 font-bold">Items</h1>
                             ${item_elemets}
                         </div>
                     `
