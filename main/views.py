@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from .items import Items
-from seller.models import Cart
+from seller.models import Cart, Transaction
 from django.contrib.auth.models import User
 import json
 # Create your views here.
@@ -49,7 +49,31 @@ def shop(request):
 
 def profile(request):
     if 'user_email' in request.session:
-        user = User.objects.get(username=request.session['user_email']) 
+        user = User.objects.get(username=request.session['user_email'])
+        transactions = Transaction.objects.filter(user_info=user)
+        item_group = []
+        filter_transaction = []
+        temp_list = []
 
-        return render(request, 'main/profile/profile.html', {'user' : user})
+        reference = 'null'
+        for index, transaction in enumerate(transactions):
+            if reference == 'null' or reference == transaction.transaction_invoice:
+                if reference == 'null':
+                    filter_transaction.append(transaction)
+
+            else:
+                filter_transaction.append(transaction)
+
+                if len(transactions) == (index+ 1 ):
+                    item_group.append(temp_list)
+
+            reference = transaction.transaction_invoice
+        
+
+        return render(request, 'main/profile/profile.html', {
+            'user' : user,
+            'transactions' : filter_transaction,
+            'item_group' : item_group,
+
+        })
     return redirect('sign_in')

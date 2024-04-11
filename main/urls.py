@@ -20,6 +20,7 @@ urlpatterns = [
 
     #Transaction End Point
     path('api/transaction/new-transaction/', transaction_endpoint.new_transaction, name='new transaction'),
+    path('api/transaction/get-item', transaction_endpoint.get_item),
 
     #Profile End Point
     path('api/profile/update', profile_endpoint.change_personal_info),

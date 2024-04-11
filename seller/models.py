@@ -25,6 +25,8 @@ class Cart(models.Model):
 
 class Transaction(models.Model):
     transaction_id = models.AutoField(primary_key=True)
+    user_info = models.ForeignKey(User, on_delete=models.CASCADE)
+    transaction_order_status = models.CharField(max_length=200, default="Processing")
     transaction_invoice = models.IntegerField()
     cart_info = models.ForeignKey(Cart, on_delete=models.CASCADE)
     transaction_total_price = models.IntegerField()

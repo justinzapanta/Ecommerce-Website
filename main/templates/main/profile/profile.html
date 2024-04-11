@@ -53,7 +53,7 @@
             </div>
         </div>
         <hr class="border-2 mt-10 md:hidden">
-        <div class="md:mt-10 md:hidden" id="personal-info">
+        <div class="md:mt-10 md:block" id="personal-info">
             <div class="">
                 <h1 id="notif" class="text-red-500 hidden">Email Address most have @gmail.com</h1>
                 <h1 class="text-start font-bold text-xl md:text-2xl">Personal Info</h1>
@@ -77,30 +77,28 @@
                     </div>
                 </form>
             </div>
-            <div class="mt-8 md:mt-10">
-                <h1 class="text-start font-bold text-xl md:text-2xl">Security</h1>
-                <button type="button" class="w-72 h-10 mt-4 md:ml-14 ml-6 bg-slate-950 text-white font-bold">Change Password</button>
-            </div>
         </div>
 
 
         <!--Transaction-->
-        <div id="Transaction" class="md:mt-10 hidden md:block container">
+        <div id="Transaction" class="md:mt-10 hidden container">
             <h1 class="text-2xl font-bold">Transaction</h1>
             <div id="card-transaction">
                 <table>
-                    <tr class="border border-black">
+                    <tr class="border border-black ">
                         <th class="px-10 border border-black">Transaction No.</th>
                         <th class="px-10 border border-black">Status</th>
                         <th class="px-10 border border-black">Total Price</th>
                         <th class="px-10 border border-black">Items</th>
                     </tr>
+                {% for transaction in transactions %}
                     <tr class="border border-black">
-                        <td class="border px-4 border-black">3</td>
-                        <td class="border px-4 border-black">Processing</td>
-                        <td class="border px-4 border-black">100</td>
-                        <td class="border px-4 text-center border-black"><button class="bg-slate-950 text-white w-full font-bold">View</button></td>
+                        <td class="border px-4 border-black">{{transaction.transaction_invoice}}</td>
+                        <td class="border px-4 border-black">{{transaction.transaction_order_status}}</td>
+                        <td class="border px-4 border-black">{{transaction.transaction_total_price}}</td>
+                        <td class="border px-4 text-center border-black"><button value-invoice="{{transaction.transaction_invoice}}" class="bg-slate-950 text-white w-full font-bold" onclick="view_button(this)">View</button></td>
                     </tr>
+                {% endfor %}
                 </table>
             </div>
         </div>
@@ -108,10 +106,60 @@
 
 
 
-
-
-
 <script>
+    const itemm = document.querySelectorAll('.itemm')
+
+    function view_button(this_){
+        const request = new XMLHttpRequest
+        request.open('POST', 'http://127.0.0.1:8000/api/transaction/get-item')
+        request.setRequestHeader('Content-Type', 'application/json')
+        request.send(JSON.stringify({'invoice_number' : this_.getAttribute('value-invoice')}))
+        request.onloadend = () => {
+            if (request.status == 200){
+                response = JSON.parse(request.responseText)
+                let item_elemets = ``
+
+                for(let i=0; i < response['length']; i++){
+                    let item = response['item_list'][i]
+
+                    item_elemets = item_elemets + `
+                        <div class='mt-2'>
+                            <div class="mt-5 ml-5 flex" id="card-item">
+                                <img class="w-32" src="${item[0]}" alt="">
+                                <div class="text-xl">
+                                    <h1>Item Name: ${item[1]}</h1>
+                                    <h1 class="mt-4 mb-5">Quantity: ${item[2]}</h1>
+                                    <h1>Total Price: ${item[3]}</h1>
+                                </div>
+                            </div>
+                            <hr class="border-2">
+                        </div>
+                    `
+                }
+                
+                const new_div = document.createElement('div')
+                new_div.classList.add('container', 'absolute', 'max-w-full', 'h-screen', 'bg-t', 'top-0')
+                new_div.id = 'modal'
+                new_div.style = 'background-color: rgba(0, 0, 0, 0.178);'
+                new_div.innerHTML = `
+                        <div class="w-6/12 h-5/6 bg-white relative mt-16 ml-72 overflow-y-auto rounded-xl itemm">
+                            <a class="absolute right-0 text-2xl mr-6 mt-3 hover:cursor-pointer font-bold" onclick="close_modal()">X</a>
+                            <h1 class="text-2xl mt-10 ml-4 font-bold">Item/s</h1>
+                            ${item_elemets}
+                        </div>
+                    `
+                document.body.appendChild(new_div)
+            }
+        }
+    }
+
+    
+
+    function close_modal(){
+        const modal = document.querySelector('#modal')
+        modal.remove()
+    }
+
 
     const transaction_info = document.querySelector('#Transaction')
     const personal_info = document.querySelector('#personal-info')
